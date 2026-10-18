@@ -1,0 +1,847 @@
+[
+ {
+  "id": "hook",
+  "src": [
+   66.04,
+   67.95
+  ],
+  "out": [
+   0.0,
+   1.9
+  ],
+  "words": [
+   {
+    "text": "Qu'est-ce",
+    "src_s": 66.1,
+    "out_s": 0.06
+   },
+   {
+    "text": "qui",
+    "src_s": 66.4,
+    "out_s": 0.36
+   },
+   {
+    "text": "se",
+    "src_s": 66.522,
+    "out_s": 0.482
+   },
+   {
+    "text": "passe",
+    "src_s": 66.62,
+    "out_s": 0.58
+   },
+   {
+    "text": "quand",
+    "src_s": 66.92,
+    "out_s": 0.88
+   },
+   {
+    "text": "tu",
+    "src_s": 67.04,
+    "out_s": 1.0
+   },
+   {
+    "text": "passes",
+    "src_s": 67.16,
+    "out_s": 1.12
+   },
+   {
+    "text": "pas",
+    "src_s": 67.36,
+    "out_s": 1.32
+   },
+   {
+    "text": "les",
+    "src_s": 67.52,
+    "out_s": 1.48
+   },
+   {
+    "text": "vitesses ?",
+    "src_s": 67.68,
+    "out_s": 1.64
+   }
+  ]
+ },
+ {
+  "id": "c1",
+  "src": [
+   4.2,
+   9.96
+  ],
+  "out": [
+   1.9,
+   7.666666666666666
+  ],
+  "words": [
+   {
+    "text": "Tu",
+    "src_s": 4.3,
+    "out_s": 2.0
+   },
+   {
+    "text": "as",
+    "src_s": 4.48,
+    "out_s": 2.18
+   },
+   {
+    "text": "un",
+    "src_s": 4.56,
+    "out_s": 2.26
+   },
+   {
+    "text": "embrayage",
+    "src_s": 4.72,
+    "out_s": 2.42
+   },
+   {
+    "text": "avec",
+    "src_s": 5.353,
+    "out_s": 3.052
+   },
+   {
+    "text": "cette",
+    "src_s": 5.697,
+    "out_s": 3.397
+   },
+   {
+    "text": "jambe-là.",
+    "src_s": 6.1,
+    "out_s": 3.8
+   },
+   {
+    "text": "Là,",
+    "src_s": 6.86,
+    "out_s": 4.56
+   },
+   {
+    "text": "tu",
+    "src_s": 7.05,
+    "out_s": 4.75
+   },
+   {
+    "text": "accélères",
+    "src_s": 7.2,
+    "out_s": 4.9
+   },
+   {
+    "text": "et",
+    "src_s": 7.84,
+    "out_s": 5.54
+   },
+   {
+    "text": "tu",
+    "src_s": 8.0,
+    "out_s": 5.7
+   },
+   {
+    "text": "relèves",
+    "src_s": 8.16,
+    "out_s": 5.86
+   },
+   {
+    "text": "le",
+    "src_s": 8.56,
+    "out_s": 6.26
+   },
+   {
+    "text": "pied",
+    "src_s": 8.72,
+    "out_s": 6.42
+   },
+   {
+    "text": "sur",
+    "src_s": 9.0,
+    "out_s": 6.7
+   },
+   {
+    "text": "l'embrayage.",
+    "src_s": 9.16,
+    "out_s": 6.86
+   }
+  ]
+ },
+ {
+  "id": "c2",
+  "src": [
+   34.9,
+   43.14
+  ],
+  "out": [
+   7.666666666666667,
+   15.899999999999999
+  ],
+  "words": [
+   {
+    "text": "En",
+    "src_s": 34.98,
+    "out_s": 7.747
+   },
+   {
+    "text": "fait,",
+    "src_s": 35.114,
+    "out_s": 7.881
+   },
+   {
+    "text": "la",
+    "src_s": 35.315,
+    "out_s": 8.082
+   },
+   {
+    "text": "différence,",
+    "src_s": 35.45,
+    "out_s": 8.216
+   },
+   {
+    "text": "c'est",
+    "src_s": 35.852,
+    "out_s": 8.619
+   },
+   {
+    "text": "que",
+    "src_s": 36.053,
+    "out_s": 8.82
+   },
+   {
+    "text": "c'est",
+    "src_s": 36.221,
+    "out_s": 8.988
+   },
+   {
+    "text": "toi",
+    "src_s": 36.422,
+    "out_s": 9.189
+   },
+   {
+    "text": "qui",
+    "src_s": 36.59,
+    "out_s": 9.357
+   },
+   {
+    "text": "es",
+    "src_s": 36.758,
+    "out_s": 9.524
+   },
+   {
+    "text": "obligé",
+    "src_s": 36.892,
+    "out_s": 9.658
+   },
+   {
+    "text": "de",
+    "src_s": 37.16,
+    "out_s": 9.927
+   },
+   {
+    "text": "passer",
+    "src_s": 37.24,
+    "out_s": 10.007
+   },
+   {
+    "text": "les",
+    "src_s": 37.56,
+    "out_s": 10.327
+   },
+   {
+    "text": "vitesses",
+    "src_s": 37.76,
+    "out_s": 10.527
+   },
+   {
+    "text": "toi-même.",
+    "src_s": 38.2,
+    "out_s": 10.967
+   },
+   {
+    "text": "C'est",
+    "src_s": 38.75,
+    "out_s": 11.517
+   },
+   {
+    "text": "chiant.",
+    "src_s": 38.95,
+    "out_s": 11.717
+   },
+   {
+    "text": "Par",
+    "src_s": 39.5,
+    "out_s": 12.267
+   },
+   {
+    "text": "rapport",
+    "src_s": 39.68,
+    "out_s": 12.447
+   },
+   {
+    "text": "à",
+    "src_s": 40.0,
+    "out_s": 12.767
+   },
+   {
+    "text": "une",
+    "src_s": 40.1,
+    "out_s": 12.867
+   },
+   {
+    "text": "boîte",
+    "src_s": 40.25,
+    "out_s": 13.017
+   },
+   {
+    "text": "auto,",
+    "src_s": 40.45,
+    "out_s": 13.217
+   },
+   {
+    "text": "la",
+    "src_s": 41.0,
+    "out_s": 13.767
+   },
+   {
+    "text": "boîte",
+    "src_s": 41.16,
+    "out_s": 13.927
+   },
+   {
+    "text": "auto",
+    "src_s": 41.48,
+    "out_s": 14.247
+   },
+   {
+    "text": "elle",
+    "src_s": 41.72,
+    "out_s": 14.487
+   },
+   {
+    "text": "gère",
+    "src_s": 41.85,
+    "out_s": 14.617
+   },
+   {
+    "text": "ta",
+    "src_s": 42.24,
+    "out_s": 15.007
+   },
+   {
+    "text": "voiture",
+    "src_s": 42.36,
+    "out_s": 15.127
+   },
+   {
+    "text": "toute",
+    "src_s": 42.68,
+    "out_s": 15.447
+   },
+   {
+    "text": "seule.",
+    "src_s": 42.85,
+    "out_s": 15.617
+   }
+  ]
+ },
+ {
+  "id": "c7",
+  "src": [
+   59.25,
+   62.0
+  ],
+  "out": [
+   15.9,
+   18.633333333333333
+  ],
+  "words": [
+   {
+    "text": "Là,",
+    "src_s": 59.32,
+    "out_s": 15.97
+   },
+   {
+    "text": "je",
+    "src_s": 59.583,
+    "out_s": 16.233
+   },
+   {
+    "text": "suis",
+    "src_s": 59.846,
+    "out_s": 16.496
+   },
+   {
+    "text": "en",
+    "src_s": 60.24,
+    "out_s": 16.89
+   },
+   {
+    "text": "quelle",
+    "src_s": 60.4,
+    "out_s": 17.05
+   },
+   {
+    "text": "vitesse,",
+    "src_s": 60.6,
+    "out_s": 17.25
+   },
+   {
+    "text": "là ?",
+    "src_s": 60.85,
+    "out_s": 17.5
+   },
+   {
+    "text": "5.",
+    "src_s": 61.52,
+    "out_s": 18.17
+   }
+  ]
+ },
+ {
+  "id": "q2",
+  "src": [
+   66.04,
+   67.95
+  ],
+  "out": [
+   18.633333333333333,
+   20.53333333333333
+  ],
+  "words": [
+   {
+    "text": "Qu'est-ce",
+    "src_s": 66.1,
+    "out_s": 18.693
+   },
+   {
+    "text": "qui",
+    "src_s": 66.4,
+    "out_s": 18.993
+   },
+   {
+    "text": "se",
+    "src_s": 66.522,
+    "out_s": 19.116
+   },
+   {
+    "text": "passe",
+    "src_s": 66.62,
+    "out_s": 19.213
+   },
+   {
+    "text": "quand",
+    "src_s": 66.92,
+    "out_s": 19.513
+   },
+   {
+    "text": "tu",
+    "src_s": 67.04,
+    "out_s": 19.633
+   },
+   {
+    "text": "passes",
+    "src_s": 67.16,
+    "out_s": 19.753
+   },
+   {
+    "text": "pas",
+    "src_s": 67.36,
+    "out_s": 19.953
+   },
+   {
+    "text": "les",
+    "src_s": 67.52,
+    "out_s": 20.113
+   },
+   {
+    "text": "vitesses ?",
+    "src_s": 67.68,
+    "out_s": 20.273
+   }
+  ]
+ },
+ {
+  "id": "c8",
+  "src": [
+   72.85,
+   74.15
+  ],
+  "out": [
+   20.533333333333335,
+   21.833333333333336
+  ],
+  "words": [
+   {
+    "text": "Il",
+    "src_s": 72.95,
+    "out_s": 20.633
+   },
+   {
+    "text": "consomme",
+    "src_s": 73.12,
+    "out_s": 20.803
+   },
+   {
+    "text": "plus",
+    "src_s": 73.6,
+    "out_s": 21.283
+   },
+   {
+    "text": "d'essence.",
+    "src_s": 73.72,
+    "out_s": 21.403
+   }
+  ]
+ },
+ {
+  "id": "c9",
+  "src": [
+   76.88,
+   84.7
+  ],
+  "out": [
+   21.833333333333332,
+   29.666666666666664
+  ],
+  "words": [
+   {
+    "text": "C'est",
+    "src_s": 76.95,
+    "out_s": 21.903
+   },
+   {
+    "text": "pour",
+    "src_s": 77.24,
+    "out_s": 22.194
+   },
+   {
+    "text": "ça",
+    "src_s": 77.531,
+    "out_s": 22.484
+   },
+   {
+    "text": "que",
+    "src_s": 77.724,
+    "out_s": 22.678
+   },
+   {
+    "text": "le",
+    "src_s": 77.966,
+    "out_s": 22.92
+   },
+   {
+    "text": "moteur",
+    "src_s": 78.16,
+    "out_s": 23.113
+   },
+   {
+    "text": "peut",
+    "src_s": 78.48,
+    "out_s": 23.433
+   },
+   {
+    "text": "être",
+    "src_s": 78.7,
+    "out_s": 23.653
+   },
+   {
+    "text": "en",
+    "src_s": 78.92,
+    "out_s": 23.873
+   },
+   {
+    "text": "sur-régime",
+    "src_s": 79.08,
+    "out_s": 24.033
+   },
+   {
+    "text": "ou",
+    "src_s": 79.8,
+    "out_s": 24.753
+   },
+   {
+    "text": "en",
+    "src_s": 80.0,
+    "out_s": 24.953
+   },
+   {
+    "text": "sous-régime.",
+    "src_s": 80.08,
+    "out_s": 25.033
+   },
+   {
+    "text": "Sur-régime,",
+    "src_s": 81.32,
+    "out_s": 26.273
+   },
+   {
+    "text": "c'est",
+    "src_s": 81.96,
+    "out_s": 26.913
+   },
+   {
+    "text": "que",
+    "src_s": 82.135,
+    "out_s": 27.088
+   },
+   {
+    "text": "tu",
+    "src_s": 82.28,
+    "out_s": 27.233
+   },
+   {
+    "text": "lui",
+    "src_s": 82.379,
+    "out_s": 27.332
+   },
+   {
+    "text": "en",
+    "src_s": 82.503,
+    "out_s": 27.456
+   },
+   {
+    "text": "demandes",
+    "src_s": 82.602,
+    "out_s": 27.556
+   },
+   {
+    "text": "trop.",
+    "src_s": 82.85,
+    "out_s": 27.803
+   },
+   {
+    "text": "Sous-régime,",
+    "src_s": 83.24,
+    "out_s": 28.193
+   },
+   {
+    "text": "tu",
+    "src_s": 83.7,
+    "out_s": 28.653
+   },
+   {
+    "text": "lui",
+    "src_s": 83.787,
+    "out_s": 28.74
+   },
+   {
+    "text": "en",
+    "src_s": 83.896,
+    "out_s": 28.849
+   },
+   {
+    "text": "demandes",
+    "src_s": 83.983,
+    "out_s": 28.936
+   },
+   {
+    "text": "pas",
+    "src_s": 84.2,
+    "out_s": 29.153
+   },
+   {
+    "text": "assez.",
+    "src_s": 84.4,
+    "out_s": 29.353
+   }
+  ]
+ },
+ {
+  "id": "c10",
+  "src": [
+   85.0,
+   87.91
+  ],
+  "out": [
+   29.666666666666668,
+   32.56666666666667
+  ],
+  "words": [
+   {
+    "text": "Et",
+    "src_s": 85.05,
+    "out_s": 29.717
+   },
+   {
+    "text": "dans",
+    "src_s": 85.32,
+    "out_s": 29.987
+   },
+   {
+    "text": "les",
+    "src_s": 85.48,
+    "out_s": 30.147
+   },
+   {
+    "text": "deux",
+    "src_s": 85.6,
+    "out_s": 30.267
+   },
+   {
+    "text": "cas,",
+    "src_s": 85.8,
+    "out_s": 30.467
+   },
+   {
+    "text": "il",
+    "src_s": 86.02,
+    "out_s": 30.687
+   },
+   {
+    "text": "consomme",
+    "src_s": 86.12,
+    "out_s": 30.787
+   },
+   {
+    "text": "trop.",
+    "src_s": 86.4,
+    "out_s": 31.067
+   },
+   {
+    "text": "Dans",
+    "src_s": 86.8,
+    "out_s": 31.467
+   },
+   {
+    "text": "les",
+    "src_s": 87.005,
+    "out_s": 31.671
+   },
+   {
+    "text": "deux",
+    "src_s": 87.175,
+    "out_s": 31.842
+   },
+   {
+    "text": "cas ?",
+    "src_s": 87.38,
+    "out_s": 32.046
+   },
+   {
+    "text": "Ouais.",
+    "src_s": 87.55,
+    "out_s": 32.217
+   }
+  ]
+ },
+ {
+  "id": "c11",
+  "src": [
+   88.3,
+   91.43
+  ],
+  "out": [
+   32.56666666666667,
+   35.7
+  ],
+  "words": [
+   {
+    "text": "Tu",
+    "src_s": 88.35,
+    "out_s": 32.617
+   },
+   {
+    "text": "as",
+    "src_s": 88.5,
+    "out_s": 32.767
+   },
+   {
+    "text": "l'habitude,",
+    "src_s": 88.68,
+    "out_s": 32.947
+   },
+   {
+    "text": "à",
+    "src_s": 89.12,
+    "out_s": 33.387
+   },
+   {
+    "text": "l'oreille,",
+    "src_s": 89.2,
+    "out_s": 33.467
+   },
+   {
+    "text": "de",
+    "src_s": 89.64,
+    "out_s": 33.907
+   },
+   {
+    "text": "savoir",
+    "src_s": 89.76,
+    "out_s": 34.027
+   },
+   {
+    "text": "quand",
+    "src_s": 90.12,
+    "out_s": 34.387
+   },
+   {
+    "text": "le",
+    "src_s": 90.247,
+    "out_s": 34.514
+   },
+   {
+    "text": "moteur",
+    "src_s": 90.32,
+    "out_s": 34.587
+   },
+   {
+    "text": "il",
+    "src_s": 90.56,
+    "out_s": 34.827
+   },
+   {
+    "text": "est",
+    "src_s": 90.68,
+    "out_s": 34.947
+   },
+   {
+    "text": "bien",
+    "src_s": 90.76,
+    "out_s": 35.027
+   },
+   {
+    "text": "ou",
+    "src_s": 90.96,
+    "out_s": 35.227
+   },
+   {
+    "text": "pas.",
+    "src_s": 91.1,
+    "out_s": 35.367
+   }
+  ]
+ },
+ {
+  "id": "c12",
+  "src": [
+   95.0,
+   96.8
+  ],
+  "out": [
+   35.7,
+   37.5
+  ],
+  "words": [
+   {
+    "text": "Arrête-moi",
+    "src_s": 95.1,
+    "out_s": 35.8
+   },
+   {
+    "text": "ta",
+    "src_s": 96.0,
+    "out_s": 36.7
+   },
+   {
+    "text": "vidéo,",
+    "src_s": 96.08,
+    "out_s": 36.78
+   },
+   {
+    "text": "c'est",
+    "src_s": 96.45,
+    "out_s": 37.15
+   },
+   {
+    "text": "bon.",
+    "src_s": 96.6,
+    "out_s": 37.3
+   }
+  ]
+ }
+]

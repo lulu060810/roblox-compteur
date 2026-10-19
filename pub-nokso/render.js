@@ -5,13 +5,14 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const FPS = 30, DUR = 20;
+const FPS = 60, DUR = 20;
 (async () => {
   const args = process.argv.slice(2);
   const browser = await chromium.launch({ args: ["--allow-file-access-from-files"] });
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   page.on("console", m => console.log("[page]", m.text()));
   page.on("pageerror", e => console.error("[page error]", e));
+  await page.addInitScript(a => { window.AUDIO = a; }, JSON.parse(fs.readFileSync(path.join(__dirname, "assets/audio.json"), "utf8")));
   await page.goto("file://" + path.join(__dirname, "render.html"));
   await page.evaluate(() => window.ready);
   const grab = t => page.evaluate(t => { renderFrame(t); return document.getElementById("c").toDataURL("image/jpeg", 0.93); }, t)
@@ -23,7 +24,7 @@ const FPS = 30, DUR = 20;
   } else {
     const out = args[0] || "nokso_army_pub.mp4";
     const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
-      "-i", path.join(__dirname, "build_music.wav"), "-c:v", "libx264", "-preset", "medium", "-crf", "17",
+      "-i", path.join(__dirname, "build_audio.wav"), "-c:v", "libx264", "-preset", "medium", "-crf", "16",
       "-pix_fmt", "yuv420p", "-r", String(FPS), "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", out],
       { stdio: ["pipe", "inherit", "inherit"] });
     for (let f = 0; f < FPS * DUR; f++) {

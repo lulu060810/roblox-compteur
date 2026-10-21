@@ -349,7 +349,7 @@ class Finale:
             frame = ImageChops.add(frame, solid((W, H), (190, 245, 255), math.exp(-ti * 9)))
 
         if 0 <= ti < 0.6:
-            amp = H * 0.012 * math.exp(-ti * 6)
+            amp = min(W, H) * 0.012 * math.exp(-ti * 6)
             dx, dy = amp * math.sin(ti * 95), amp * math.cos(ti * 71)
             z = 1.04
             bw, bh = W / z, H / z

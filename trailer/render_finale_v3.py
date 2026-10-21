@@ -51,9 +51,10 @@ def solid(size, color, k):
     return Image.new("RGB", size, tuple(int(c * k) for c in color))
 
 
-def render_text(H):
+def render_text(H, text=TEXT, scale=0.082):
     """Texte 3D : extrusion bleu profond, contour cyan épais, face blanche, halo discret."""
-    size = int(H * 0.082)
+    TEXT = text
+    size = int(H * scale)
     font = ImageFont.truetype(FONT, size)
     stroke = max(2, int(size * 0.11))
     depth = max(2, int(size * 0.10))

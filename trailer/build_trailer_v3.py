@@ -157,7 +157,7 @@ class Builder:
             mo = f"scale=w='iw*1.0':h=-2,rotate=a='-0.25+0.35*t/{dur}':ow=iw:oh=ih,crop={W}:{H}"
         f = [f"scale=-2:{big}:flags=lanczos", mo, "setsar=1"] + self.look(o)
         if o.get("fadein"):
-            f.append(f"fade=t=in:st={PREMIER_TEMPS - 0.12:.3f}:d=0.6")
+            f.append(f"fade=t=in:st={max(0.0, PREMIER_TEMPS - 0.12):.3f}:d=0.6")
         run(["ffmpeg", "-loglevel", "error", "-y", "-loop", "1", "-framerate", str(self.FPS), "-i", o["img"],
              "-vf", ",".join(f)] + self.enc(f"{self.tmp}/{name}.mp4", n))
 

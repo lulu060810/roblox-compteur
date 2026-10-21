@@ -1,4 +1,36 @@
-# MINE TO GET RICH — Trailer officiel (30 s, 16:9, 60 i/s)
+# MINE TO GET RICH — Trailer officiel
+
+## Version 3.0 (actuelle) — 30 s, 1920×1080, 60 i/s, H.264 + AAC stéréo
+
+```bash
+# placer le MP3 dans assets/musique.mp3 (non versionné), puis :
+python3 build_trailer_v3.py --preview   # 640x360, ~25 s de calcul
+python3 build_trailer_v3.py             # -> build/MINE_TO_GET_RICH_trailer_v3_1080p.mp4
+```
+
+Monté sur « Upside Down » (≈107,7 BPM, 1 temps = 0,557 s, premier temps à 0,432 s),
+sans changer la vitesse du morceau. Chaque coupe tombe sur un temps.
+
+| Temps | Scène | Contenu |
+|---|---|---|
+| 0 – 6,0 s | 1 · Intro | Noir très court, ouverture sur le 1er temps : falaises bleues, arbres cubiques, nuages orangés ; travelling ; descente depuis le ciel vers la carte |
+| 6,0 – 13,8 s | 2 · Découverte | Survol de la mine, zoom sur l'arène centrale, bâtiments, toits turquoise, gros plan minerais — éclats lumineux sur les coupes |
+| 13,8 – 21,6 s | 3 · Montage dynamique | 7 plans de 2 temps : vue aérienne, zoom vers l'arène, travelling, falaises, rotation, travelling rapide, panorama — zooms d'impact, flou de vitesse, whoosh |
+| 21,6 – 23,3 s | 4 · Recul | La caméra s'éloigne et révèle toute la carte |
+| 23,3 – 23,8 s | Suspension | La musique tombe pendant 1 temps, fond flouté, particules bleues qui convergent |
+| 23,8 s | **BOOM** | Logo détouré en zoom 3D + rebond, flash cyan, onde de choc, tremblement, cristaux, pièces d'or, reflets |
+| 26,1 s | 5 · Texte | Le logo remonte, « DISPONIBLE PROCHAINEMENT » apparaît dessous (3D, blanc, contour cyan, rebond, particules) |
+| 28,3 – 30 s | Fin | Fondu au noir de l'image et de la musique |
+
+- `assets/logo_detoure.png` : le logo officiel détouré (fond supprimé, pixels d'origine conservés).
+- La musique n'est pas incluse dans le dépôt (œuvre protégée). **Avant toute diffusion
+  publique, il faut une licence de synchronisation pour « Upside Down »** ; sinon, remplacer
+  `MUSIQUE`, `TEMPS` et `PREMIER_TEMPS` en haut de `build_trailer_v3.py` par une musique
+  funk/disco sous licence : tout le montage se recale sur la nouvelle grille.
+
+---
+
+## Version 1 — 30 s, 16:9, 60 i/s
 
 Trailer monté **uniquement avec les vrais éléments du jeu** : les deux captures vidéo
 Roblox Studio, les deux captures d'écran de la carte et l'image officielle du logo.

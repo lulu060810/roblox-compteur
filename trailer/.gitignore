@@ -1,0 +1,5 @@
+build/tmp/
+build/*.log
+build/*.wav
+build/*_4K.mp4
+__pycache__/

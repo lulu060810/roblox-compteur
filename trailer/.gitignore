@@ -6,3 +6,5 @@ __pycache__/
 build/*_preview.mp4
 assets/musique.mp3
 build/tmp_v3/
+assets/nightcall.mp3
+build/tmp_v3_*/

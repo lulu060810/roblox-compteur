@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Trailer MINE TO GET RICH v3 : 30 s, 1920x1080, 60 i/s, H.264 + AAC stéréo.
 
-Monté sur « Upside Down » (assets/musique.mp3, ~107,7 BPM). Toutes les coupes tombent
-sur la grille des temps du morceau : temps k = PREMIER_TEMPS + k * TEMPS.
+Toutes les coupes tombent sur la grille des temps du morceau choisi :
+temps k = PREMIER_TEMPS + k * TEMPS (voir MUSIQUES).
 
-  python3 build_trailer_v3.py            -> build/MINE_TO_GET_RICH_trailer_v3_1080p.mp4
-  python3 build_trailer_v3.py --preview  -> 640x360 30 i/s, pour valider vite
+  python3 build_trailer_v3.py                        -> « Upside Down » (assets/musique.mp3)
+  python3 build_trailer_v3.py --musique nightcall    -> « Nightcall » (assets/nightcall.mp3)
+  ajouter --preview pour un rendu 640x360 30 i/s rapide
 
-Pour une autre musique : mesurez son tempo et son premier temps, puis changez
-MUSIQUE, TEMPS et PREMIER_TEMPS ci-dessous ; le montage se recale automatiquement.
+Pour une autre musique : mesurer son tempo et ses temps forts, ajouter une entrée
+dans MUSIQUES et REPERES ; le montage se recale automatiquement.
 """
 import argparse
 import os
@@ -24,11 +25,16 @@ AERIAL = "assets/vue_aerienne.png"     # arène vue du dessus
 ARENA = "assets/arene.png"             # falaises bleues, arbres, nuages orangés
 LOGO = "assets/logo_detoure.png"       # logo officiel détouré (pixels d'origine)
 FOND = "assets/fond_final.png"         # vraie carte, floutée sous le logo
-MUSIQUE = "assets/musique.mp3"
-
-TEMPS = 0.5572          # durée d'un temps (s)
-PREMIER_TEMPS = 0.432   # position du premier temps dans le morceau (s)
 DUREE = 30.0
+
+# Grille de chaque musique : TEMPS = durée d'un temps, PREMIER_TEMPS = instant (dans la vidéo)
+# du temps n°0, DEBUT = position dans le morceau qui correspond à 0 s de vidéo.
+MUSIQUES = {
+    "upside": dict(fichier="assets/musique.mp3", temps=0.5572, premier=0.432, debut=0.0, gain=0.9),
+    # Nightcall : ~97 BPM, phrases de 16 temps ; le BOOM (temps 40) tombe sur un début de phrase.
+    "nightcall": dict(fichier="assets/nightcall.mp3", temps=0.6186, premier=0.30, debut=24.464, gain=0.72),
+}
+MUSIQUE, TEMPS, PREMIER_TEMPS, DEBUT, GAIN = None, None, None, None, None
 
 
 def beat(k):
@@ -37,7 +43,7 @@ def beat(k):
 
 # (nom, début en temps, fin en temps, type, paramètres)
 # Le 1er plan commence à 0 s (écran noir très court puis ouverture sur le 1er temps).
-SHOTS = [
+SHOTS_UPSIDE = [
     # SCÈNE 1 — introduction : falaises, arbres cubiques, nuages orangés, puis la carte vue du ciel
     ("s01", None, 4, "still", dict(img=ARENA, motion="push", fadein=True)),
     ("s02", 4, 6, "clip", dict(src=B, a=0.0, b=1.6)),
@@ -59,8 +65,28 @@ SHOTS = [
     # SCÈNE 4 — la caméra s'éloigne et révèle toute la carte
     ("s16", 38, 41, "clip", dict(src=A, a=3.4, b=7.4, blur=True, darken=True)),
 ]
-FINALE_START = 41   # suspension d'un temps, BOOM au temps 42
-BOOM, TEXTE, FONDU = 42, 46, 50
+# Nightcall est plus lent (temps plus longs) : même découpage, 2 temps de moins en scène 2.
+SHOTS_NIGHTCALL = SHOTS_UPSIDE[:4] + [
+    ("s05", 14, 16, "still", dict(img=AERIAL, motion="zoom_center", flash=True)),
+    ("s06", 16, 18, "clip", dict(src=B, a=7.6, b=10.0, flash=True)),
+    ("s07", 18, 20, "still", dict(img=AERIAL, motion="pan_roofs", flash=True)),
+    ("s08", 20, 22, "clip", dict(src=A, a=0.0, b=1.5, zoom=True, flash=True)),
+] + [(n, b0 - 2, b1 - 2, k, o) for n, b0, b1, k, o in SHOTS_UPSIDE[8:]]
+
+# suspension d'un temps (FINALE_START -> BOOM), texte, début du fondu ; whoosh de la scène 3
+REPERES = {
+    "upside": dict(shots=SHOTS_UPSIDE, finale=41, boom=42, texte=46, fondu=50, whoosh=range(24, 40, 2)),
+    "nightcall": dict(shots=SHOTS_NIGHTCALL, finale=39, boom=40, texte=44, fondu=46, whoosh=range(22, 38, 2)),
+}
+SHOTS = FINALE_START = BOOM = TEXTE = FONDU = WHOOSH = None
+
+
+def choisir(nom):
+    global MUSIQUE, TEMPS, PREMIER_TEMPS, DEBUT, GAIN, SHOTS, FINALE_START, BOOM, TEXTE, FONDU, WHOOSH
+    m, r = MUSIQUES[nom], REPERES[nom]
+    MUSIQUE, TEMPS, PREMIER_TEMPS, DEBUT, GAIN = m["fichier"], m["temps"], m["premier"], m["debut"], m["gain"]
+    SHOTS, FINALE_START, BOOM, TEXTE, FONDU, WHOOSH = (
+        r["shots"], r["finale"], r["boom"], r["texte"], r["fondu"], r["whoosh"])
 
 
 def run(cmd):
@@ -68,11 +94,12 @@ def run(cmd):
 
 
 class Builder:
-    def __init__(self, preview):
+    def __init__(self, preview, nom):
         self.W, self.H, self.FPS = (640, 360, 30) if preview else (1920, 1080, 60)
         self.preset, self.crf = ("veryfast", "22") if preview else ("slow", "16")
-        self.tmp = os.path.join("build", "tmp_v3")
-        self.out = os.path.join("build", "MINE_TO_GET_RICH_trailer_v3_%s.mp4" % ("preview" if preview else "1080p"))
+        self.tmp = os.path.join("build", "tmp_v3_" + nom)
+        suffixe = "" if nom == "upside" else "_" + nom
+        self.out = os.path.join("build", "MINE_TO_GET_RICH_trailer_v3%s_%s.mp4" % (suffixe, "preview" if preview else "1080p"))
         os.makedirs(os.path.join(HERE, self.tmp), exist_ok=True)
 
     def frames(self, t):
@@ -159,7 +186,7 @@ class Builder:
     def audio(self):
         sr = 48000
         path = os.path.join(HERE, self.tmp, "music.f32")
-        run(["ffmpeg", "-loglevel", "error", "-y", "-i", MUSIQUE, "-t", str(DUREE), "-ac", "2", "-ar", str(sr),
+        run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(DEBUT), "-i", MUSIQUE, "-t", str(DUREE), "-ac", "2", "-ar", str(sr),
              "-f", "f32le", path])
         mus = np.fromfile(path, np.float32).reshape(-1, 2).astype(np.float64)
         N = int(DUREE * sr)
@@ -214,13 +241,13 @@ class Builder:
         chime = sum(np.sin(2 * np.pi * 440 * 2 ** ((m - 69) / 12) * tt) for m in (84, 88, 91, 96)) * np.exp(-tt * 4) * 0.035
         at(chime, beat(TEXTE), fx)
         # Whoosh discrets sur les coupes de la scène 3.
-        for k in range(24, 40, 2):
+        for k in WHOOSH:
             tt = np.arange(int(0.35 * sr)) / sr
             wn = rng.standard_normal(len(tt))
             wh = (wn - lp(wn, 700)) * np.sin(np.pi * tt / 0.35) ** 2 * 0.045
             at(np.stack([wh, np.roll(wh, 400)], 1), beat(k) - 0.22, fx)
 
-        mix = mus * 0.9 + fx
+        mix = mus * GAIN + fx
         # Limiteur doux : ne touche que les crêtes au-dessus de 0,9.
         over = np.abs(mix) > 0.9
         mix[over] = np.sign(mix[over]) * (0.9 + 0.09 * np.tanh((np.abs(mix[over]) - 0.9) / 0.09))
@@ -241,8 +268,10 @@ class Builder:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--preview", action="store_true")
+    ap.add_argument("--musique", choices=sorted(MUSIQUES), default="upside")
     a = ap.parse_args()
-    b = Builder(a.preview)
+    choisir(a.musique)
+    b = Builder(a.preview, a.musique)
     print("1/3 Plans")
     b.video()
     print("2/3 Audio")

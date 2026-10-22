@@ -1,6 +1,6 @@
 # Synthesised sound design: 128 BPM beat + whooshes, impacts, click, chime, riser.
 import numpy as np, wave, sys
-SR = 44100; DUR = 10.5; N = int(SR * DUR)
+SR = 44100; DUR = 11.5; N = int(SR * DUR)
 rng = np.random.default_rng(1)
 mix = np.zeros((N, 2))
 t_all = np.arange(N) / SR
@@ -66,9 +66,9 @@ def click():
 beat = 60 / 128; start = .78
 bass_notes = [55, 55, 65.4, 49]  # A1 A1 C2 G1 per bar
 b = 0
-while start + b * beat < 10.2:
+while start + b * beat < 11.2:
     at = start + b * beat
-    if not (7.9 < at < 8.15):  # drop-out before the final section
+    if not (8.9 < at < 9.15):  # drop-out before the final section
         add(kick(), at, .9)
         add(hat(), at + beat / 2, .25, .3)
         if b % 2 == 1: add(clap(), at, .5, -.1)
@@ -86,18 +86,23 @@ add(riser(.5), 1.7, .6); add(whoosh(.35), 1.95, .8)
 add(impact(1.0), 2.2, .7)
 for i in range(10): add(click() * .5, 2.27 + i * .04, .35, (i - 5) / 6)  # letter pops
 add(whoosh(.6), 2.6, .6, .4)            # card flip-in
-add(chime() * .4, 3.4, .5, .3)          # shine sweep
-for i in range(13): add(click(), 3.5 + i * .046, .18)  # typewriter
-add(whoosh(.45), 4.65, .9, .5)
-add(impact(.8), 5.05, .6)
-add(whoosh(.35, rev=True), 5.3, .6)
-add(whoosh(.5), 6.15, .3, .7)           # cursor
-add(click(), 6.8, 1.2); add(impact(.9), 6.8, .7); add(chime(), 6.85, .9)
-for i in range(6): add(chime() * np.exp(-i * .4) * .5, 7.0 + i * .12, .5, (-1) ** i * .5)  # bell
-add(riser(1.0), 7.15, .8)
-add(whoosh(.35), 7.95, .8)
-add(impact(1.5), 8.45, 1.3)
-add(whoosh(.5, rev=True), 8.75, .5)
+add(impact(.6), 3.75, .45); add(whoosh(.3, rev=True), 3.75, .5)  # play button blows away
+add(chime() * .4, 3.8, .5, .3)          # shine sweep
+for i in range(8): add(click(), 3.7 + i * .08, .35, (i - 4) / 5)  # title words
+add(whoosh(.3), 4.4, .5, -.3)           # channel pill
+for i in range(9): add(click(), 4.6 + i * .055, .2)  # typed channel name
+# from here on everything runs 1 s later (SHIFT in short.html)
+S = 1.0
+add(whoosh(.45), 4.65 + S, .9, .5)
+add(impact(.8), 5.05 + S, .6)
+add(whoosh(.35, rev=True), 5.3 + S, .6)
+add(whoosh(.5), 6.15 + S, .3, .7)       # cursor
+add(click(), 6.8 + S, 1.2); add(impact(.9), 6.8 + S, .7); add(chime(), 6.85 + S, .9)
+for i in range(6): add(chime() * np.exp(-i * .4) * .5, 7.0 + S + i * .12, .5, (-1) ** i * .5)  # bell
+add(riser(1.0), 7.15 + S, .8)
+add(whoosh(.35), 7.95 + S, .8)
+add(impact(1.5), 8.45 + S, 1.3)
+add(whoosh(.5, rev=True), 8.75 + S, .5)
 
 # master: fade out, soft clip, normalise
 mix *= np.clip((DUR - t_all) / .4, 0, 1)[:, None]

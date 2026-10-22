@@ -103,6 +103,11 @@ class Finale:
         self._cache = {}
 
         self.text, self.text_halo = render_text(H)
+        # Arrivée « slam » : le logo fonce vers sa place et atterrit pile sur le BOOM.
+        self.slam = getattr(a, "slam", False)
+        hw, hh = W // 2, H // 2
+        self.ray_x = np.arange(hw, dtype=np.float32)[None, :]
+        self.ray_y = np.arange(hh, dtype=np.float32)[:, None]
         self.text_y = 0.855
 
         self.over = 1.06
@@ -152,6 +157,8 @@ class Finale:
 
     def logo_layout(self, T):
         """(échelle, centre y) du logo, ou None avant l'impact."""
+        if self.slam:
+            return self.slam_layout(T)
         p = (T - self.impact) / 0.5
         if p <= 0:
             return None
@@ -161,6 +168,32 @@ class Finale:
         q = ease_in_out(clamp((T - self.text_t + 0.05) / 0.35))
         fit = lerp(self.fit_big, self.fit_small, q) * k
         return fit, lerp(self.y_big, self.y_small, q)
+
+    FLIGHT = 0.3
+
+    def slam_layout(self, T):
+        p = (T - (self.impact - self.FLIGHT)) / self.FLIGHT
+        if p <= 0:
+            return None
+        if p < 1:
+            k = lerp(3.4, 1.0, p * p)        # vient de la caméra et accélère
+        else:
+            x = T - self.impact               # écrasement puis rebond amorti
+            k = 1 - 0.09 * math.exp(-7 * x) * math.sin(19 * x)
+        q = ease_in_out(clamp((T - self.text_t + 0.05) / 0.35))
+        return lerp(self.fit_big, self.fit_small, q) * k, lerp(self.y_big, self.y_small, q)
+
+    def rays(self, T, cy):
+        """Rayons de lumière cyan qui tournent lentement derrière le logo (demi-résolution)."""
+        ti = T - self.impact
+        k = clamp(ti / 0.15) * (0.45 + 0.35 * math.exp(-3 * ti) + 0.06 * math.sin(T * 3))
+        dx = self.ray_x - self.W / 4
+        dy = self.ray_y - cy / 2
+        th = np.arctan2(dy, dx)
+        r = np.sqrt(dx * dx + dy * dy) / (self.H / 2)
+        v = (0.5 + 0.5 * np.cos(12 * (th - T * 0.25))) ** 6 * np.exp(-r * 1.6) * (1 - np.exp(-r * 6)) * k
+        rgb = (v[..., None] * np.array(CYAN, np.float32)).clip(0, 255).astype(np.uint8)
+        return Image.fromarray(rgb, "RGB").resize((self.W, self.H), Image.BILINEAR)
 
     def shine(self, logo, T):
         for t0, dur in ((self.impact + 0.6, 0.65), (self.text_t + 0.7, 0.75)):
@@ -325,12 +358,32 @@ class Finale:
         lay = self.logo_layout(T)
         if lay is not None:
             fit, ly_c = lay
+            if self.slam and ti > 0:
+                frame = ImageChops.add(frame, self.rays(T, ly_c * H))
             logo, lglow, pad = self.logo_at(fit)
             lx, ly = int(cx - logo.width / 2), int(ly_c * H - logo.height / 2)
-            intensity = 0.6 + 0.9 * math.exp(-3 * max(0, ti)) + 0.08 * math.sin(T * 2.0)
-            frame = self.add_at(frame, lglow.point(lambda v, i=intensity: min(255, int(v * i))), lx - pad, ly - pad)
-            logo = self.shine(logo, T)
-            frame.paste(logo, (lx, ly), logo)
+            if self.slam and ti < 0:
+                # en vol : apparition progressive + traînée de flou de mouvement
+                fa = clamp((ti + self.FLIGHT) / (self.FLIGHT * 0.4))
+                for gk, ga in ((1.25, 0.16), (1.12, 0.3)):
+                    gl, _, _ = self.logo_at(fit * gk)
+                    gl = gl.copy()
+                    gl.putalpha(gl.getchannel("A").point(lambda v, k=ga * fa: int(v * k)))
+                    frame.paste(gl, (int(cx - gl.width / 2), int(ly_c * H - gl.height / 2)), gl)
+                logo = logo.copy()
+                logo.putalpha(logo.getchannel("A").point(lambda v, k=fa: int(v * k)))
+                frame.paste(logo, (lx, ly), logo)
+            else:
+                intensity = 0.6 + 0.9 * math.exp(-3 * max(0, ti)) + 0.08 * math.sin(T * 2.0)
+                frame = self.add_at(frame, lglow.point(lambda v, i=intensity: min(255, int(v * i))), lx - pad, ly - pad)
+                logo = self.shine(logo, T)
+                if self.slam and ti < 0.35:
+                    # impact : le logo apparaît blanc incandescent puis reprend ses couleurs
+                    w = (1 - ti / 0.35) ** 1.5
+                    hot = Image.new("RGBA", logo.size, (235, 252, 255, 255))
+                    hot.putalpha(logo.getchannel("A").point(lambda v, k=w: int(v * k)))
+                    logo = Image.alpha_composite(logo, hot)
+                frame.paste(logo, (lx, ly), logo)
 
         if tt > 0:
             p = clamp(tt / 0.45)
@@ -355,6 +408,11 @@ class Finale:
             bw, bh = W / z, H / z
             x0, y0 = (W - bw) / 2 + dx, (H - bh) / 2 + dy
             frame = frame.resize((W, H), Image.BILINEAR, box=(x0, y0, x0 + bw, y0 + bh))
+            if self.slam and ti < 0.25:  # décalage des couleurs à l'impact
+                d = int(W * 0.008 * (1 - ti / 0.25))
+                if d:
+                    r_, g_, b_ = frame.split()
+                    frame = Image.merge("RGB", (ImageChops.offset(r_, d, 0), g_, ImageChops.offset(b_, -d, 0)))
 
         if T > self.fade_t:
             k = 1 - clamp((T - self.fade_t) / (self.dur - self.fade_t))
@@ -375,6 +433,7 @@ def main():
     ap.add_argument("--fps", type=int, default=60)
     ap.add_argument("--crf", default="16")
     ap.add_argument("--preset", default="slow")
+    ap.add_argument("--slam", action="store_true", help="arrivée du logo améliorée (v4)")
     a = ap.parse_args()
 
     W, H = (int(v) for v in a.size.split("x"))

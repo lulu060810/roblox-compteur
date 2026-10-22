@@ -79,6 +79,7 @@ REPERES = {
     "nightcall": dict(shots=SHOTS_NIGHTCALL, finale=39, boom=40, texte=44, fondu=46, whoosh=range(22, 38, 2)),
 }
 SHOTS = FINALE_START = BOOM = TEXTE = FONDU = WHOOSH = None
+FINALE_OPTIONS = []   # options en plus pour render_finale_v3.py (ex. ["--slam"])
 
 
 def choisir(nom):
@@ -125,8 +126,13 @@ class Builder:
         W, H = self.W, self.H
         speed = (o["b"] - o["a"]) / dur
         pre = ["reverse"] if o.get("reverse") else []
-        f = pre + ["crop=iw*0.92:ih*0.92:0:ih*0.08",
-                   f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos", f"crop={W}:{H}",
+        if o.get("studio", True):  # rush Roblox Studio : on recadre le ViewCube
+            pre.append("crop=iw*0.92:ih*0.92:0:ih*0.08")
+        if o.get("smooth"):  # rush à 24 i/s : images intermédiaires calculées pour un mouvement fluide
+            pre += [f"setpts=(PTS-STARTPTS)/{speed}",
+                    f"minterpolate=fps={self.FPS}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1"]
+            speed = 1
+        f = pre + [f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos", f"crop={W}:{H}",
                    "setsar=1", f"setpts=(PTS-STARTPTS)/{speed}", f"fps={self.FPS}",
                    "tpad=stop_mode=clone:stop_duration=1"]
         if o.get("blur"):
@@ -134,6 +140,8 @@ class Builder:
         if o.get("zoom"):
             f.append(f"scale=w='{W}*(1+0.10*t/{dur})':h=-2:eval=frame,crop={W}:{H}")
         f += self.look(o)
+        if o.get("fadein"):
+            f.append("fade=t=in:st=0:d=0.5")
         if o.get("darken"):
             f.append(f"fade=t=out:st={dur - 0.35}:d=0.35")
         run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(o["a"]), "-to", str(o["b"]), "-i", o["src"],
@@ -177,7 +185,7 @@ class Builder:
              "--out", f"{self.tmp}/final.mp4", "--size", f"{self.W}x{self.H}", "--fps", str(self.FPS),
              "--crf", self.crf, "--preset", self.preset,
              "--impact", f"{beat(BOOM) - t0:.4f}", "--text", f"{beat(TEXTE) - t0:.4f}",
-             "--fade", f"{beat(FONDU) - t0:.4f}", "--duration", f"{n / self.FPS:.4f}"])
+             "--fade", f"{beat(FONDU) - t0:.4f}", "--duration", f"{n / self.FPS:.4f}"] + FINALE_OPTIONS)
         names.append("final")
         with open(os.path.join(HERE, self.tmp, "list.txt"), "w") as fh:
             fh.writelines(f"file '{x}.mp4'\n" for x in names)

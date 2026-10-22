@@ -21,12 +21,11 @@ import build_trailer_v3 as v3
 from render_finale_v3 import render_text
 
 A, B, AERIAL, ARENA = v3.A, v3.B, v3.AERIAL, v3.ARENA
+ILE = "assets/footage/ile.mp4"   # arrivée par l'océan sur l'île (rendu 1280x720, 24 i/s)
 
 SHOTS = [
     # Phrase 1 — on découvre le monde
-    ("s01", None, 4, "still", dict(img=ARENA, motion="push", fadein=True)),
-    ("s02", 4, 6, "clip", dict(src=B, a=0.0, b=1.6)),
-    ("s03", 6, 10, "clip", dict(src=A, a=4.4, b=7.4, reverse=True)),
+    ("s01", None, 10, "clip", dict(src=ILE, a=0.0, b=6.0, studio=False, smooth=True, fadein=True)),
     ("s04", 10, 12, "clip", dict(src=B, a=1.6, b=4.0, flash=True)),
     ("s05", 12, 14, "clip", dict(src=A, a=0.0, b=1.5, zoom=True, flash=True)),
     ("s06", 14, 16, "still", dict(img=AERIAL, motion="zoom_center", flash=True)),
@@ -44,12 +43,13 @@ SHOTS = [
     ("s16", 33, 34, "clip", dict(src=A, a=0.3, b=1.0, punch=True)),
     ("s17", 34, 35, "still", dict(img=AERIAL, motion="zoom_fast", punch=True)),
     ("s18", 35, 36, "clip", dict(src=B, a=2.0, b=4.0, punch=True, blur=True)),
-    ("s19", 36, 39, "clip", dict(src=A, a=3.4, b=7.4, blur=True, darken=True)),
+    # la caméra quitte l'arène et révèle l'île entière dans l'océan
+    ("s19", 36, 39, "clip", dict(src=ILE, a=4.0, b=10.0, reverse=True, studio=False, smooth=True, darken=True)),
 ]
 
 # (texte, temps d'apparition, temps de disparition, taille relative à la hauteur)
 TEXTES = [
-    ("EXPLORE LA MINE", 2, 6, 0.11),
+    ("UNE ÎLE À EXPLORER", 4, 8, 0.10),
     ("CREUSE", 10, 12.5, 0.16),
     ("TROUVE DES MINERAIS RARES", 12.5, 16, 0.085),
     ("DEVIENS RICHE", 18, 22, 0.13),
@@ -115,6 +115,7 @@ def main():
     v3.DEBUT = 59.42                # début du 1er refrain dans le fichier
     v3.SHOTS = SHOTS
     v3.FINALE_START, v3.BOOM, v3.TEXTE, v3.FONDU = 39, 40, 44, 46
+    v3.FINALE_OPTIONS = ["--slam"]   # arrivée du logo améliorée
     v3.WHOOSH = list(range(16, 32, 2)) + [32, 33, 34, 35, 36]
 
     b = v3.Builder(a.preview, "v4")

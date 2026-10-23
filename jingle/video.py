@@ -10,6 +10,7 @@ W, H, FPS, DUR = 1920, 1080, 60, 5.0
 NF = int(FPS * DUR)
 HERE = sys.path[0]
 U = 2  # sur-échantillonnage de la source pour des zooms nets
+FINAL = os.environ.get("THEME") == "final"  # thème "boss final" : enfer rouge/orange et or
 
 # ---------------------------------------------------------------- source
 src0 = Image.open(f"{HERE}/source.png").convert("RGB")
@@ -80,7 +81,7 @@ def shake_amount(t):
         a += 14 * math.exp(-(t - 4.2) * 9)
     if t < 0.4:
         a += 6 * (1 - t / 0.4)
-    return a
+    return a * (1.25 if FINAL else 1.0)
 
 
 def shake(t, seed):
@@ -195,6 +196,10 @@ nx, ny = (xx - W / 2) / (W / 2), (yy - H / 2) / (H / 2)
 VIGNETTE = np.clip(1 - 0.55 * (nx ** 2 * 0.7 + ny ** 2) ** 1.2, 0, 1)[..., None]
 LEAK_RED = np.exp(-(((xx - 0) / 900) ** 2 + ((yy - H) / 650) ** 2))[..., None] * np.array([255, 20, 30], np.float32)
 LEAK_VIO = np.exp(-(((xx - W) / 950) ** 2 + ((yy - 0) / 700) ** 2))[..., None] * np.array([150, 40, 255], np.float32)
+if FINAL:
+    LEAK_RED = np.exp(-(((xx - 0) / 900) ** 2 + ((yy - H) / 650) ** 2))[..., None] * np.array([255, 70, 0], np.float32)
+    LEAK_VIO = np.exp(-(((xx - W) / 950) ** 2 + ((yy - 0) / 700) ** 2))[..., None] * np.array([200, 0, 20], np.float32)
+FIRE_GLOW = np.exp(-((H - yy) / 260) ** 2)[..., None] * np.array([255, 90, 10], np.float32)
 CENTER_DIST = np.sqrt(((xx - W / 2) / W) ** 2 + ((yy - H / 2) / W) ** 2)
 
 
@@ -203,9 +208,13 @@ def grade(f, t):
     dark = lerp(0.55, 0.82, clamp01(t / 0.35))
     f = f * dark
     lum = f.mean(axis=2, keepdims=True)
-    f = f * 0.88 + lum * 0.12 * np.array([0.9, 0.7, 1.25], np.float32)  # ombres teintées violet
+    tint = [1.3, 0.75, 0.55] if FINAL else [0.9, 0.7, 1.25]
+    f = f * 0.88 + lum * 0.12 * np.array(tint, np.float32)  # ombres teintées
     f = f * VIGNETTE
     f = f + LEAK_RED * 0.32 * flick + LEAK_VIO * 0.30 * (1.6 - flick)
+    if FINAL:  # lueur de flammes qui monte du bas de l'image
+        fire = 0.45 + 0.2 * math.sin(t * 31) * math.sin(t * 13.7) + 0.1 * math.sin(t * 57)
+        f = f + FIRE_GLOW * fire
     return f
 
 
@@ -215,9 +224,12 @@ TS = 1.5  # super-échantillonnage du titre
 
 
 def build_title():
+    text = os.environ.get("TITRE", "MANCHE 1")
     size = int(335 * TS)
     font = ImageFont.truetype(FONT, size)
-    text = os.environ.get("TITRE", "MANCHE 1")
+    while font.getbbox(text)[2] - font.getbbox(text)[0] > 1640 * TS:  # titre long : on réduit
+        size -= 4
+        font = ImageFont.truetype(FONT, size)
     bbox = font.getbbox(text)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     pad = int(90 * TS)
@@ -239,22 +251,33 @@ def build_title():
     for i in range(depth, 0, -1):
         k = i / depth
         col = (int(lerp(70, 25, k)), int(lerp(6, 2, k)), int(lerp(60, 30, k)), 255)
+        if FINAL:
+            col = (int(lerp(110, 35, k)), int(lerp(30, 5, k)), int(lerp(5, 0, k)), 255)
         layer.paste(col, (0, 0), text_mask(i * 0.55, i, int(24 * TS)))
     # contour rouge extérieur
-    layer.paste((225, 18, 40, 255), (0, 0), text_mask(0, 0, int(24 * TS)))
-    # contour violet
-    layer.paste((150, 45, 255, 255), (0, 0), text_mask(0, 0, int(13 * TS)))
-    # fine ligne sombre entre violet et blanc
-    layer.paste((40, 8, 70, 255), (0, 0), text_mask(0, 0, int(4 * TS)))
+    outer, inner, line = ((225, 18, 40), (150, 45, 255), (40, 8, 70))
+    if FINAL:
+        outer, inner, line = ((150, 0, 0), (255, 110, 0), (70, 15, 0))
+    layer.paste(outer + (255,), (0, 0), text_mask(0, 0, int(24 * TS)))
+    # contour intérieur
+    layer.paste(inner + (255,), (0, 0), text_mask(0, 0, int(13 * TS)))
+    # fine ligne sombre entre le contour et le remplissage
+    layer.paste(line + (255,), (0, 0), text_mask(0, 0, int(4 * TS)))
     # remplissage blanc avec léger dégradé et reflet
     fill = text_mask()
     grad = np.zeros((ch, cw, 4), np.uint8)
     gy = np.linspace(0, 1, ch)[:, None]
     top, bot = oy + bbox[1], oy + bbox[3]
     g = np.clip((np.arange(ch)[:, None] - top) / max(1, bot - top), 0, 1) * np.ones((1, cw))
-    grad[..., 0] = (255 - 25 * g).astype(np.uint8)
-    grad[..., 1] = (255 - 45 * g).astype(np.uint8)
-    grad[..., 2] = (255 - 10 * g).astype(np.uint8)
+    if FINAL:  # or métallique : clair en haut, ambré en bas, reflet au milieu
+        shine = np.exp(-((g - 0.42) / 0.06) ** 2)
+        grad[..., 0] = 255
+        grad[..., 1] = np.clip(240 - 110 * g + 30 * shine, 0, 255).astype(np.uint8)
+        grad[..., 2] = np.clip(170 - 160 * g + 80 * shine, 0, 255).astype(np.uint8)
+    else:
+        grad[..., 0] = (255 - 25 * g).astype(np.uint8)
+        grad[..., 1] = (255 - 45 * g).astype(np.uint8)
+        grad[..., 2] = (255 - 10 * g).astype(np.uint8)
     grad[..., 3] = 255
     layer.paste(Image.fromarray(grad, "RGBA"), (0, 0), fill)
     hl = text_mask(0, -int(6 * TS)).filter(ImageFilter.GaussianBlur(2 * TS))
@@ -324,6 +347,8 @@ def composite_title(f, t):
     # glow rouge/violet derrière le titre
     mix = math.sin(t * 5) * 0.5 + 0.5
     gcol = np.array([lerp(255, 160, mix), 25, lerp(50, 255, mix)], np.float32)
+    if FINAL:
+        gcol = np.array([255, lerp(40, 120, mix), 0], np.float32)
     region += gsub * gcol * gl * 0.9 * op
     alpha = sub[..., 3:4] / 255 * op
     region[:] = region * (1 - alpha) + sub[..., :3] * alpha
@@ -341,16 +366,44 @@ def make_burst(n, t0, speed, life):
         t0=t0, x=W / 2 + rng.normal(0, 120, n), y=H / 2 + 50 + rng.normal(0, 40, n),
         vx=np.cos(ang) * sp * 1.4, vy=np.sin(ang) * sp - 150,
         life=rng.uniform(0.4, 1.0, n) * life, size=rng.uniform(2, 7, n),
-        col=rng.choice(np.array([[255, 60, 50], [255, 140, 60], [170, 70, 255], [255, 240, 240], [220, 30, 255]],
+        col=rng.choice(np.array([[255, 60, 20], [255, 140, 30], [255, 200, 60], [255, 240, 200], [200, 20, 0]]
+                                if FINAL else
+                                [[255, 60, 50], [255, 140, 60], [170, 70, 255], [255, 240, 240], [220, 30, 255]],
                                 np.float32), n),
     )
 
 
 BURSTS = [make_burst(320, 2.0, 1700, 1.6), make_burst(140, 4.2, 1200, 0.9)]
-N_AMB = 70
-AMB = dict(x=rng.uniform(0, W, N_AMB), y=rng.uniform(0, H, N_AMB), vy=rng.uniform(-90, -25, N_AMB),
-           sway=rng.uniform(0, 6.28, N_AMB), size=rng.uniform(1.5, 4.5, N_AMB),
-           col=rng.choice(np.array([[255, 70, 40], [190, 80, 255], [255, 120, 70]], np.float32), N_AMB))
+N_AMB = 190 if FINAL else 70
+AMB = dict(x=rng.uniform(0, W, N_AMB), y=rng.uniform(0, H, N_AMB),
+           vy=rng.uniform(-320, -90, N_AMB) if FINAL else rng.uniform(-90, -25, N_AMB),
+           sway=rng.uniform(0, 6.28, N_AMB), size=rng.uniform(1.5, 5.5 if FINAL else 4.5, N_AMB),
+           col=rng.choice(np.array([[255, 90, 10], [255, 160, 40], [255, 40, 0]] if FINAL else
+                                   [[255, 70, 40], [190, 80, 255], [255, 120, 70]], np.float32), N_AMB))
+
+# éclairs (thème final) : instants et graines
+BOLTS = [(1.0, 1), (1.47, 2), (2.0, 3), (2.0, 4), (4.2, 5)] if FINAL else []
+
+
+def draw_bolt(dr, seed, k):
+    r = np.random.default_rng(seed)
+    x, y = r.uniform(W * 0.15, W * 0.85), -20.0
+    pts = [(x, y)]
+    while y < H * r.uniform(0.55, 0.9):
+        x += r.normal(0, 55)
+        y += r.uniform(40, 90)
+        pts.append((x, y))
+    col = (int(255 * k), int(200 * k), int(140 * k))
+    dr.line(pts, fill=col, width=max(1, int(9 * k)))
+    for _ in range(3):  # ramifications
+        i = r.integers(1, len(pts) - 1)
+        bx, by = pts[i]
+        br = [(bx, by)]
+        for _ in range(r.integers(2, 5)):
+            bx += r.normal(0, 60)
+            by += r.uniform(30, 70)
+            br.append((bx, by))
+        dr.line(br, fill=col, width=max(1, int(4 * k)))
 
 
 def particles_layer(t):
@@ -386,8 +439,13 @@ def particles_layer(t):
             r = 80 + 1900 * (1 - math.exp(-d * 5))
             k = (1 - d / 0.55) ** 1.5 * strength
             wdt = int(6 + 30 * k)
-            col = (int(255 * k), int(70 * k), int(230 * k))
+            col = (int(255 * k), int(150 * k), int(20 * k)) if FINAL else (int(255 * k), int(70 * k), int(230 * k))
             dr.ellipse((W / 2 - r, H / 2 + 50 - r * 0.42, W / 2 + r, H / 2 + 50 + r * 0.42), outline=col, width=wdt)
+    for t0, seed in BOLTS:
+        d = t - t0
+        if 0 <= d < 0.16:
+            k = (1 - d / 0.16) * (0.6 + 0.4 * (int(d * 60) % 2))  # scintillement
+            draw_bolt(dr, seed, k)
     glow = layer.filter(ImageFilter.GaussianBlur(9))
     return np.asarray(layer).astype(np.float32) + np.asarray(glow).astype(np.float32) * 1.6
 
@@ -399,11 +457,11 @@ def flash(t):
     for t0, c, dur, a in [
         (0.0, (255, 255, 255), 0.12, 0.6),
         (1.0, (255, 20, 30), 0.18, 0.85),
-        (1.08, (160, 40, 255), 0.18, 0.6),
-        (1.47, (170, 40, 255), 0.15, 0.7),
+        (1.08, (255, 110, 0) if FINAL else (160, 40, 255), 0.18, 0.6),
+        (1.47, (255, 120, 10) if FINAL else (170, 40, 255), 0.15, 0.7),
         (1.86, (255, 20, 40), 0.12, 0.6),
         (2.0, (255, 245, 255), 0.22, 1.25),
-        (2.05, (150, 30, 255), 0.35, 0.55),
+        (2.05, (255, 90, 0) if FINAL else (150, 30, 255), 0.35, 0.55),
         (4.2, (255, 30, 60), 0.25, 0.6),
     ]:
         d = t - t0
@@ -446,7 +504,7 @@ def apply_glitch(img, t, fi):
         off = int(r.normal(0, 140 * g))
         out[y0:y0 + h] = np.roll(out[y0:y0 + h], off, axis=1)
         if r.random() < 0.3 * g:
-            out[y0:y0 + h] = out[y0:y0 + h] * np.array([1.2, 0.4, 1.3], np.float32)
+            out[y0:y0 + h] = out[y0:y0 + h] * np.array([1.4, 0.6, 0.2] if FINAL else [1.2, 0.4, 1.3], np.float32)
     if g >= 1:
         for _ in range(6):
             bw, bh = r.integers(40, 260), r.integers(10, 70)

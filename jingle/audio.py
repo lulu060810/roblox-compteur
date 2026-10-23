@@ -1,4 +1,5 @@
 """Sound design du jingle MANCHE 1 (5 s, 48 kHz stéréo) - tout est synthétisé."""
+import os
 import sys
 import wave
 
@@ -10,6 +11,7 @@ DUR = 5.0
 N = int(SR * DUR)
 t = np.arange(N) / SR
 rng = np.random.default_rng(7)
+FINAL = os.environ.get("THEME") == "final"  # boss final : plus grave, tambours de guerre, cloche
 
 
 def env_adsr(start, attack, hold, release, curve=3.0):
@@ -94,7 +96,7 @@ def add_pan_sweep(x, gain, pan_from, pan_to):
 
 
 # 1. Drone inquiétant qui monte (0 -> 2 s), puis nappe grave jusqu'à 4.7 s
-f = np.where(t < 2.0, 42 * (72 / 42) ** np.clip(t / 2.0, 0, 1), 41.2)
+f = np.where(t < 2.0, 42 * (72 / 42) ** np.clip(t / 2.0, 0, 1), 41.2) * (0.75 if FINAL else 1.0)
 drone = sum(saw(phase_of(f * k * (1 + d))) for k, d in [(1, 0), (1, 0.007), (2, -0.004), (1.5, 0.003)])
 drone = lp(drone, 900, 4)
 denv = np.where(t < 2.0, np.clip(t / 1.95, 0, 1) ** 1.6, 0)
@@ -184,7 +186,8 @@ def laugh_syllable(dur, f0_start, f0_end):
 
 laugh = np.zeros(N)
 for s, f0a, f0b in [(2.72, 150, 138), (2.94, 140, 126), (3.16, 128, 112), (3.40, 116, 92)]:
-    syl = laugh_syllable(0.22, f0a, f0b)
+    k = 0.72 if FINAL else 1.0  # rire plus grave pour le boss
+    syl = laugh_syllable(0.22, f0a * k, f0b * k)
     a = int(s * SR)
     laugh[a:a + len(syl)] += syl
 laugh = laugh + 0.35 * np.roll(laugh, int(0.012 * SR))  # léger doublage
@@ -213,6 +216,45 @@ add(x, 0.6)
 w = sweep_filter(rng.standard_normal(N), 400, 7000, 4.6, 0.4, q=1.2)
 e = np.clip((t - 4.6) / 0.4, 0, 1) ** 1.5
 add_pan_sweep(w * e, 0.8, -0.8, 0.8)
+
+# Thème final : cloche funèbre + tambours de guerre + sub renforcé
+if FINAL:
+    def bell(start, f0, gain):
+        k = int(start * SR)
+        tt = t[k:] - start
+        partials = [(0.5, 1.0, 1.2), (1.0, 0.8, 1.6), (1.19, 0.5, 2.2), (1.56, 0.45, 2.6),
+                    (2.0, 0.35, 3.0), (2.74, 0.25, 4.0), (3.76, 0.15, 5.0)]
+        b = sum(a * np.sin(2 * np.pi * f0 * r * tt) * np.exp(-tt * d) for r, a, d in partials)
+        x = np.zeros(N)
+        x[k:] = b * (1 - np.exp(-tt * 300))
+        return x
+    for s0 in (0.05, 2.0):
+        bl = bell(s0, 196, 1)
+        add(bl, 0.12, -0.2)
+        add(bl, 0.12, 0.2)
+        rev_send = rev_send + bl * 0.5
+
+    def taiko(start, gain, f0=70):
+        k = int(start * SR)
+        n = min(int(0.6 * SR), N - k)
+        tt = np.arange(n) / SR
+        body = np.sin(2 * np.pi * (f0 * tt + 60 * (1 - np.exp(-tt * 25)) / 25)) * np.exp(-tt * 7)
+        skin = bp(rng.standard_normal(n), 150, 1200) * np.exp(-tt * 30) * 0.5
+        x = np.zeros(N)
+        x[k:k + n] = np.tanh((body + skin) * 1.8)
+        return x * gain
+
+    for s0, g in [(0.30, 0.5), (0.55, 0.5), (0.80, 0.6), (1.00, 0.9), (1.25, 0.6), (1.47, 0.8),
+                  (1.62, 0.6), (1.75, 0.7), (1.83, 0.75), (1.91, 0.8), (2.0, 1.0),
+                  (4.2, 0.9), (4.45, 0.6), (4.6, 0.7)]:
+        dr = taiko(s0, g)
+        add(dr, 0.5, rng.uniform(-0.3, 0.3))
+        rev_send = rev_send + dr * 0.3
+    k = int(2.0 * SR)
+    tt = t[k:] - 2.0
+    x = np.zeros(N)
+    x[k:] = np.sin(phase_of(28 + 40 * np.exp(-tt * 6))) * np.exp(-tt * 1.6)
+    add(np.tanh(x * 2), 0.5)
 
 # Réverbération globale
 wet = reverb(rev_send, 1.8, 2.5)

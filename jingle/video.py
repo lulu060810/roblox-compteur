@@ -1,5 +1,6 @@
-"""Rendu vidéo du jingle MANCHE 1 : 1920x1080, 60 FPS, 5 s -> frames RGB brutes sur stdout."""
+"""Rendu vidéo du jingle de manche (texte via la variable TITRE, défaut "MANCHE 1") : 1920x1080, 60 FPS, 5 s."""
 import math
+import os
 import sys
 
 import numpy as np
@@ -216,7 +217,7 @@ TS = 1.5  # super-échantillonnage du titre
 def build_title():
     size = int(335 * TS)
     font = ImageFont.truetype(FONT, size)
-    text = "MANCHE 1"
+    text = os.environ.get("TITRE", "MANCHE 1")
     bbox = font.getbbox(text)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     pad = int(90 * TS)

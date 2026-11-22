@@ -1,7 +1,7 @@
 // usage: node render.js <outdir> [workers] [res] [fps]
 const { chromium } = require('playwright'); const { spawn } = require('child_process');
 const out = process.argv[2], WK = +(process.argv[3] || 4), RES = +(process.argv[4] || 2), FPS = +(process.argv[5] || 60);
-const N = 10 * FPS, W = 1080 * RES, H = 1920 * RES;
+const DUR = +(process.argv[6] || 19), N = Math.round(DUR * FPS), W = 1080 * RES, H = 1920 * RES;
 (async () => {
   const b = await chromium.launch();
   const chunk = Math.ceil(N / WK), t0 = Date.now();

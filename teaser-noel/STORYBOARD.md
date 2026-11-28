@@ -31,3 +31,20 @@ Pour une version « photoréaliste » générée par IA, découpe-la en 3 plans,
 > Same scene, the string lights brighten one by one, snowfall gets denser, the camera slowly pulls back, the background logo gradually comes into focus. Festive and elegant, warm gold highlights, cinematic, no text. End with fade to black.
 
 **Post-production :** incruster `assets/logo.png` net (mode « Écran » ou blanc avec alpha) pour la révélation, ajouter les textes ci-dessus aux timings du tableau et exporter **sans audio**.
+
+---
+
+# Teaser n°2 : cartes Robux à gagner
+
+**Vidéo :** `out/united_games_cartes_robux.mp4`, même format (1080 × 1920, 30 fps, 18 s, sans audio).
+**Regénérer :** `python3 render_robux.py` (réutilise le décor, la neige, le logo et le bonnet de `render_teaser.py`).
+
+| Temps | Scène | Ce qu'on voit |
+|---|---|---|
+| 0 – 1,55 s | 🧊 Glace turquoise | Bloc de glace turquoise et violet couvert de givre en fougères, avec une **carte cadeau Robux prisonnière** à l'intérieur (floue). Une grande fissure verticale descend du haut vers le bas en deux poussées, avec des ramifications. De la lumière dorée filtre par la fente. |
+| 1,55 – 3 s | 💥 Ouverture | Flash doré, le bloc s'ouvre en deux et chaque moitié s'effondre en blocs (gravité, rotation). La carte se libère au centre. |
+| 2,45 – 7 s | 🎁 Annonce | **DES CARTES / ROBUX** (doré) **/ À GAGNER ! 🎁** (rouge). La carte flotte, avec un reflet qui la balaie. Dessous : *Le cadeau de Noël de United Games 🎄*. |
+| 7 – 12 s | ❄️ Mystère | Deux autres cartes sortent en éventail, la caméra avance. Le montant reste caché (« ??? R$ »). *Combien de cartes ? 👀*, puis *Qui va les remporter ? 🏆*. |
+| 12 – 18 s | 🎄 Révélation | Le logo devient net, le bonnet tombe et l'éventail de cartes se place sous le logo. **CARTES ROBUX** / **À GAGNER CHEZ UNITED GAMES 🎄** / *Abonne-toi pour ne rien rater 🔔*, avec une mention légale en petit, puis un fondu au noir. |
+
+La carte est un design original (vert émeraude, dorures, pièce « R$ »). Le logo officiel Roblox/Robux n'est pas utilisé, pour éviter les problèmes de marque.
